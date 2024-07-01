@@ -1,0 +1,52 @@
+const express = require("express");
+const { createTodo, updateTodo } = require("./type");
+const { todo } = require("./db");
+const app = express();
+
+app.get("/", async function (req, res) {
+  const createPayload = req.body;
+  const parsePayload = createTodo.safeParse(createPayload);
+  if (!parsePayload.success) {
+    res.status(411).json({
+      msg: "Wrong input",
+    });
+    return;
+  }
+  await todo.create({
+    title:createPayload.title,
+    description:createPayload.description,
+    completed:false,
+  })
+
+  res.json({
+    msg:"Todo created"
+  })
+});
+
+app.post("/add", async function (req, res) {
+  const todos=await todos.find({});
+  res.json({todos})
+});
+
+app.put("/complete", async function (req, res) {
+  const updatePayload = req.body;
+  const parsePayload = updateTodo.safeParse(updatePayload);
+  if (!parsePayload.success) {
+    res.status(411).json({ msg: "Wrong Input" });
+    return; 
+  }
+  await todo.update({
+    _id:req.body.id
+  },{
+    completed:true
+  })
+  res.json({msg: "Todo marked as completed"})
+
+});
+
+app.listen(3000, function (err) {
+  if (err) {
+    console.log(err);
+  }
+  console.log("server is running on port 3000");
+});
