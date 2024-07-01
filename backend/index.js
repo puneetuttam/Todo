@@ -3,7 +3,10 @@ const { createTodo, updateTodo } = require("./type");
 const { todo } = require("./db");
 const app = express();
 
-app.get("/", async function (req, res) {
+
+app.use(express.json())
+
+app.post("/todo", async function (req, res) {
   const createPayload = req.body;
   const parsePayload = createTodo.safeParse(createPayload);
   if (!parsePayload.success) {
@@ -13,19 +16,19 @@ app.get("/", async function (req, res) {
     return;
   }
   await todo.create({
-    title:createPayload.title,
-    description:createPayload.description,
-    completed:false,
-  })
+    title: createPayload.title,
+    description: createPayload.description,
+    completed: false,
+  });
 
   res.json({
-    msg:"Todo created"
-  })
+    msg: "Todo created",
+  });
 });
 
-app.post("/add", async function (req, res) {
-  const todos=await todos.find({});
-  res.json({todos})
+app.get("/todos", async function (req, res) {
+  const todos = await todo.find({});
+  res.json({ todos });
 });
 
 app.put("/complete", async function (req, res) {
@@ -33,15 +36,17 @@ app.put("/complete", async function (req, res) {
   const parsePayload = updateTodo.safeParse(updatePayload);
   if (!parsePayload.success) {
     res.status(411).json({ msg: "Wrong Input" });
-    return; 
+    return;
   }
-  await todo.update({
-    _id:req.body.id
-  },{
-    completed:true
-  })
-  res.json({msg: "Todo marked as completed"})
-
+  await todo.update(
+    {
+      _id: req.body.id,
+    },
+    {
+      completed: true,
+    }
+  );
+  res.json({ msg: "Todo marked as completed" });
 });
 
 app.listen(3000, function (err) {

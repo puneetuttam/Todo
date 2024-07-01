@@ -7,7 +7,7 @@ mongoose.connect(
 const todoSchema = mongoose.Schema({
   title: String,
   description: String,
-  complete: Boolean,
+  completed: Boolean,
 });
 
 const todo = mongoose.model("todos", todoSchema);
